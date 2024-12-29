@@ -1,0 +1,7 @@
+Two ways of connecting database:
+1. directly in index.js 
+2. modularising it in separate folder called db and importing it in index.js
+
+Database connection:
+-> There can be errors or problems, always safe to wrap in try-catch block or resolve-reject promise
+-> database connection always requires time, so use async await 
