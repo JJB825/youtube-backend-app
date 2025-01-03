@@ -27,3 +27,14 @@ extended: true allows for nested objects sending
 
 nodejs provides an error class that helps us to handle api errors 
 wwe can override those classes using inheritance in js to standardise error handling process
+
+mongodb aggregatation pipeline:
+mongoose-aggregate-paginate-v2: allows to write aggregation queries
+
+both based on cryptography
+bcrypt: helps you to hash password
+jwt: json web tokens
+-> consists of headers, which contains algorithm used and type of token
+-> and payload, the data stored in token, ie the user details/credentials
+-> verification signature: consists secret key that makes the token unique
+-> is a bearer token, it's like whoever has this token and sends it to the server, the server will send data to that user 
