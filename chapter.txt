@@ -5,3 +5,25 @@ Two ways of connecting database:
 Database connection:
 -> There can be errors or problems, always safe to wrap in try-catch block or resolve-reject promise
 -> database connection always requires time, so use async await 
+
+app.on() method for handling express app errors
+
+Express App:
+req.params: used to fetch data from url
+req.body: used to fetch json or forms data
+
+cookie-parser: middleware for handling cookies
+cors: cross origin resource sharing
+app.use() method for handling middlewares or configuration settings
+
+cors: origin parameter defines the source which can make requests to server
+* in origin means all sources(not recommended usually)
+
+cookie parser is used to setup backend for receiving different data formats from different parts
+used for accessing and setting user's browser's cookies
+
+for handling data from url, (url uses special encoding for sending data)
+extended: true allows for nested objects sending
+
+nodejs provides an error class that helps us to handle api errors 
+wwe can override those classes using inheritance in js to standardise error handling process
