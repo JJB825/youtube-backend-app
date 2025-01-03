@@ -38,3 +38,17 @@ jwt: json web tokens
 -> and payload, the data stored in token, ie the user details/credentials
 -> verification signature: consists secret key that makes the token unique
 -> is a bearer token, it's like whoever has this token and sends it to the server, the server will send data to that user 
+
+file upload, image upload is usually a common task that it is made a utility function and used wherever needed
+cloudinary -> biggest and most used platform for file upload
+
+multer and express-file upload both packages can be used for file upload
+cloudinary is a service (sdk), file upload requires multer 
+Process of storing files on cloudinary:
+1. takes files from user and store it in local server
+2. then take file from local server and upload it on cloudinary server
+
+for file handling use nodejs file handling
+unlink in file handling means unlinking file from file system: when we delete from file, the file stays there but gets unlinked from file system
+
+implementing multer as middleware so that it can implemented wherever file upload is necessary
