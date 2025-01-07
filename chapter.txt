@@ -52,3 +52,75 @@ for file handling use nodejs file handling
 unlink in file handling means unlinking file from file system: when we delete from file, the file stays there but gets unlinked from file system
 
 implementing multer as middleware so that it can implemented wherever file upload is necessary
+
+HTTP Crash Course:
+HTTP vs HTTPS
+-> only difference in protocol, no difference in technology and rules
+-> HTTP: sends data in clear text, HTTPS: sends data in encrypted form
+
+URL: uniform resource locator -> location of resource
+URI: uniform resource identifier -> identity of resource
+URN: uniform resource name -> name of resource
+-> specifies where to talk to for data?
+
+HTTP headers:
+-> required to send information along with requests -> headers
+-> metadata: information about data: when was it created, modified, owner, size, etc. key value pairs sent along with request response
+functions: caching data from cached database, authentication(headers contains bearerToken, cookies values,etc), manage state(eg: user state: logged in, guest user, already some data in saved cart, etc)
+-> earlier in headers keeping x-prefix was mandatory, but now deprecated (just a convention)
+-> types of headers:
+1. request headers: from client
+2. response headers: from server (standardisation important)
+3. representation headers: dictates encoding / compression (for applications like graph-chart, razor pay, mobile applications, etc)
+4. payload headers: data
+.. and many more
+
+most common errors:
+1. accept: application/json -> tells which type of data is accepted by server
+2. user-agent: tells from which application has sent the request: url(browser-type), postman, application, etc
+3. authorization
+4. content-type
+5. cookie: key-value pairs containing time to expire, time to login, etc
+6. cache-control: tells after how much time to expire data from cache, etc
+
+CORS:
+Access control allow origin: allowed origins of requests
+Access control allow credentials: credentials allowed
+Access control allow method: http methods allowed
+
+security:
+cross origin embedder policy
+cross origin opener policy
+content security policy
+x-xss-protection
+
+HTTP Methods:
+Basic set of operations that can be used to interact with server 
+GET: retrieve a resource
+HEAD: no message body(response headers only)
+OPTIONS: what operations are available -> defines what all methods are allowed at specific endpoint
+TRACE: loopback test(get some data) -> to detect the path followed by data from source to destination to detect any problems or in case of lagging, etc
+DELETE: remove a resource
+PUT: replace a resource
+POST: interact with a resource(mostly add)
+PATCH: change part of resource
+
+HTTP status code:
+1xx: informational - pass some information to user
+-> 100: continue
+-> 102: processing
+2xx: success of operation executed
+-> 200: ok
+-> 201: created
+-> 202: accepted - just inform the user that server has accepted the data sent by user
+3xx: redirectional
+-> 307: temporary redirect 
+-> 308: permananent redirect
+4xx: client error
+-> 400: bad request
+-> 401: unauthorised
+-> 402: payment required
+-> 404: not found
+5xx: server error
+-> 500: internal server error - server down, server outage
+-> 504: gateway timeout
