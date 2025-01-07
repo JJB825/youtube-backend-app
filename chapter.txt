@@ -124,3 +124,12 @@ HTTP status code:
 5xx: server error
 -> 500: internal server error - server down, server outage
 -> 504: gateway timeout
+
+Routers and controllers: usually routes are imported in app.js file 
+since we have separted all routes in router folder we would require middleware to import them in app.js file
+
+standard practice for urls: /api/v1 : api denotes this is api, v1 denotes this is version 1
+
+possible errors in database connection:
+-> atlas ip allow, password proper (no special characters)
+-> proper connections
