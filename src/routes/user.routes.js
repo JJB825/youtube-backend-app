@@ -1,8 +1,17 @@
 import { Router } from "express";
 import { registerUser } from "../controllers/user.controllers.js";
+import { upload } from "../middlewares/multer.middlewares.js";
 
 const router = Router();
 
-router.route("/register").post(registerUser); // whenever router receives control, it will check for /register route and execute the registerUser function for post method
+router.route("/register").post(
+  // middleware for file handling
+  upload.fields([
+    // the name property shall match the form object property from frontend
+    { name: "avatar", maxCount: 1 },
+    { name: "coverImage", maxCount: 1 },
+  ]),
+  registerUser
+); // whenever router receives control, it will check for /register route and execute the registerUser function for post method
 
 export default router;

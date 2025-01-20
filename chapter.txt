@@ -133,3 +133,12 @@ standard practice for urls: /api/v1 : api denotes this is api, v1 denotes this i
 possible errors in database connection:
 -> atlas ip allow, password proper (no special characters)
 -> proper connections
+
+take all fields from req.body
+if all fields are not present, sent error message
+import user model from models
+use mongoose method, insertOne method to insert user
+send error messages from mongoose method, basically wrap it in try-catch block
+error message will include incorrect or incomplete fields, try of creating new user with same credentials, etc
+if error, send appropriate error with status code
+if no error send status code success
