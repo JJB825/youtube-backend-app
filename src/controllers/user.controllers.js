@@ -18,7 +18,7 @@ const registerUser = asyncHandler(async (req, res) => {
   // you can check for other validation too
 
   // check if user already exists: username or email
-  const exisitingUser = User.findOne({ $or: [{ username }, { email }] });
+  const exisitingUser = await User.findOne({ $or: [{ username }, { email }] });
   if (exisitingUser) {
     throw new ApiError(
       409, // indicates a conflict with resource's current state
@@ -28,8 +28,19 @@ const registerUser = asyncHandler(async (req, res) => {
 
   // check for images: avatar compulsory, coverImage (not mandatory)
   const avatarLocalPath = req.files?.avatar[0]?.path;
-  const coverImageLocalPath = req.files?.coverImage[0]?.path;
+  // const coverImageLocalPath = req.files?.coverImage[0]?.path;
   // used optional chaining as not sure that the avatar image location is present or not
+
+  let coverImageLocalPath;
+  // checking for coverImage
+  // Array.isArray checks whether the argument is an array or not
+  if (
+    req.files &&
+    Array.isArray(req.files.coverImage) &&
+    req.files.coverImage.length > 0
+  ) {
+    coverImageLocalPath = req.files.coverImage[0].path;
+  }
 
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar Image is necessary");
