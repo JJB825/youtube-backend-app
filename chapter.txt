@@ -134,6 +134,9 @@ possible errors in database connection:
 -> atlas ip allow, password proper (no special characters)
 -> proper connections
 
+----------------------------------------------------------------------------------------
+
+self practice of todos for registering user:
 take all fields from req.body
 if all fields are not present, sent error message
 import user model from models
@@ -142,3 +145,23 @@ send error messages from mongoose method, basically wrap it in try-catch block
 error message will include incorrect or incomplete fields, try of creating new user with same credentials, etc
 if error, send appropriate error with status code
 if no error send status code success
+
+-----------------------------------------------------------------------------------------
+
+access tokens and refresh tokens:
+access tokens: short lived, refresh tokens: longed lived
+while access token is alive, whatever resources the user is authorised to use via access token is possible. 
+for security reasons, access tokens expires very shortly, and so the user needs to reauthenticate itself by entering it's credentials to access resources. To save user from this pain, refresh token is used. refresh token is long lived and is stored in database and given to user via which it can generate new access tokens to authenticate itself, so that he/she doesn't need to reenter it's credentials
+
+-----------------------------------------------------------------------------------------
+
+self practice of todos for logging user:
+-> take user data from req.body - ask for username/email and password
+-> check for empty fields
+-> validate for email and password
+-> if proper credentials, generate access and refresh tokens
+-> return logged in user details
+
+-----------------------------------------------------------------------------------------
+
+setup auth middleware for authentication
