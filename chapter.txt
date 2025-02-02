@@ -152,6 +152,7 @@ access tokens and refresh tokens:
 access tokens: short lived, refresh tokens: longed lived
 while access token is alive, whatever resources the user is authorised to use via access token is possible. 
 for security reasons, access tokens expires very shortly, and so the user needs to reauthenticate itself by entering it's credentials to access resources. To save user from this pain, refresh token is used. refresh token is long lived and is stored in database and given to user via which it can generate new access tokens to authenticate itself, so that he/she doesn't need to reenter it's credentials
+this can be accomplished by giving another endpoint to frontend, which can be hit and new accessToken can be generated or accessToken can be refreshed.
 
 -----------------------------------------------------------------------------------------
 
