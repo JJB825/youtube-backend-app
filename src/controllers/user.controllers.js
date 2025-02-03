@@ -216,7 +216,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     return res
       .status(200)
       .cookie("accessToken", accessToken, COOKIE_OPTIONS)
-      .cookie("refreshToken", refreshToken, COOKIE_OPTIONS)
+      .cookie("refreshToken", newRefreshToken, COOKIE_OPTIONS)
       .json(
         new ApiResponse(
           200,
@@ -229,4 +229,143 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken };
+// common user functionalities needed
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+  // take password from req.body
+  const { oldPassword, newPassword } = req.body;
+
+  // here user can be retrieved using req.user can be used because before executing this function we will pass the middleware verifyJWT to ensure that the user is logged in or not, cause this is authenticated functionality
+  const user = await User.findById(req.user?._id);
+
+  // check if old password entered is true or false
+  const passwordCheck = await user.isPasswordCorrect(oldPassword);
+  if (!passwordCheck) {
+    throw new ApiError(401, "Invalid old password");
+  }
+
+  // set new password and save
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false });
+
+  // return success response
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Password updated successfully"));
+});
+
+const getCurrentUser = asyncHandler(async (req, res) => {
+  return res
+    .status(200)
+    .json(new ApiResponse(200, req.user, "Current user fetched successfully"));
+});
+
+// updating user details depend on what all fields are you allowing to update
+// this is for text details updates, for file updates make separate controllers
+const updateAccountDetails = asyncHandler(async (req, res) => {
+  const { fullName, email } = req.body;
+
+  // check for input fields
+  if (!(fullName || email)) {
+    throw new ApiError(400, "Please fill all input fields");
+  }
+
+  // get user and update details
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user._id,
+    // updates the fields
+    { $set: { fullName, email } },
+    // returns new copy
+    { new: true }
+    // chaining methods
+  ).select("-password");
+
+  // return response
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedUser, "Account Details updated successfully")
+    );
+});
+
+// here two middlewares before this function: first multer for accepting file inputs, second authentication
+const updateUserAvatar = asyncHandler(async (req, res) => {
+  // take out local path
+  const avatarLocalPath = req.file?.path;
+
+  // check if present or not
+  if (!avatarLocalPath) {
+    throw new ApiError(400, "Avatar Image is necessary");
+  }
+
+  // upload file on cloudinary
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+  // check for successfull upload
+  if (!avatar.url) {
+    throw new ApiError(500, "Avatar Image not uploaded successfully");
+  }
+
+  // update the avatar field of the user and save
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user._id,
+    // updates the fields
+    { $set: { avatar: avatar.url } },
+    // returns new copy
+    { new: true }
+    // chaining methods
+  ).select("-password");
+
+  // return response
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedUser, "Avatar image updated successfully")
+    );
+});
+
+const updateUserCoverImage = asyncHandler(async (req, res) => {
+  // take out local path
+  const coverImageLocalPath = req.file?.path;
+
+  // check if present or not
+  if (!coverImageLocalPath) {
+    throw new ApiError(400, "Cover Image is necessary");
+  }
+
+  // upload file on cloudinary
+  const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+
+  // check for successfull upload
+  if (!coverImage.url) {
+    throw new ApiError(500, "Cover Image not uploaded successfully");
+  }
+
+  // update the avatar field of the user and save
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user._id,
+    // updates the fields
+    { $set: { coverImage: coverImage.url } },
+    // returns new copy
+    { new: true }
+    // chaining methods
+  ).select("-password");
+
+  // return response
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedUser, "Cover Image updated successfully")
+    );
+});
+
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  refreshAccessToken,
+  changeCurrentPassword,
+  getCurrentUser,
+  updateAccountDetails,
+  updateUserAvatar,
+  updateUserCoverImage,
+};
