@@ -290,7 +290,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 // here two middlewares before this function: first multer for accepting file inputs, second authentication
 const updateUserAvatar = asyncHandler(async (req, res) => {
   // take out local path
-  const avatarLocalPath = req.file?.path;
+  const avatarLocalPath = req.files?.avatar[0]?.path;
 
   // check if present or not
   if (!avatarLocalPath) {
@@ -325,7 +325,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 
 const updateUserCoverImage = asyncHandler(async (req, res) => {
   // take out local path
-  const coverImageLocalPath = req.file?.path;
+  const coverImageLocalPath = req.files?.coverImage[0]?.path;
 
   // check if present or not
   if (!coverImageLocalPath) {
