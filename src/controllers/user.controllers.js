@@ -2,7 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.models.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnCloudinary, deleteOldImages } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
 import { COOKIE_OPTIONS } from "../constants.js";
 
@@ -305,6 +305,9 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Avatar Image not uploaded successfully");
   }
 
+  // delete existing avatar
+  await deleteOldImages(req.user.avatar);
+
   // update the avatar field of the user and save
   const updatedUser = await User.findByIdAndUpdate(
     req.user._id,
@@ -339,6 +342,9 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
   if (!coverImage.url) {
     throw new ApiError(500, "Cover Image not uploaded successfully");
   }
+
+  // delete existing coverImage
+  await deleteOldImages(req.user.coverImage);
 
   // update the avatar field of the user and save
   const updatedUser = await User.findByIdAndUpdate(
