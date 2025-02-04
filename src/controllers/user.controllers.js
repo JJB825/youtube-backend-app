@@ -5,6 +5,7 @@ import { User } from "../models/user.models.js";
 import { uploadOnCloudinary, deleteOldImages } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
 import { COOKIE_OPTIONS } from "../constants.js";
+import mongoose from "mongoose";
 
 // here normal async function is user because we are not generating any web request
 const generateAccessAndRefreshTokens = async (userId) => {
@@ -364,6 +365,123 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     );
 });
 
+const getUserChannelProfile = asyncHandler(async (req, res) => {
+  // get username from params
+  const { username } = req.params;
+
+  // check if username has been found out from params
+  if (!username?.trim()) {
+    throw new ApiError(404, "Channel not found");
+  }
+
+  // apply aggregation pipelines using username
+  const channel = await User.aggregate([
+    // using match we get specific channel we are searching for - usually the first pipeline to filter documents
+    { $match: { username: username?.toLowerCase() } },
+    // second pipeline is the lookup: to match the documents from different collections
+    // lookup for finding subscribers count
+    {
+      $lookup: {
+        from: "subscriptions",
+        localField: "_id",
+        foreignField: "channel",
+        as: "subscribers",
+      },
+    },
+    // lookup for finding subscribedTo count
+    {
+      $lookup: {
+        from: "subscriptions",
+        localField: "_id",
+        foreignField: "subscriber",
+        as: "subscribedTo",
+      },
+    },
+    // adding addtional fields to user model to get count of both documents fetched above
+    {
+      $addFields: {
+        subscribersCount: { $size: "$subscribers" },
+        channelsSubscribedToCount: { $size: "$subscribedTo" },
+        isSubscribed: {
+          // checks if the user is subscribed to the channel or not by checking it's id in subscribers of channel
+          // $in checks in arrays and objects
+          $cond: {
+            if: { $in: [req.user?._id, "$subscribers.subscriber"] },
+            then: true,
+            else: false,
+          },
+        },
+      },
+    },
+    {
+      // tells which fields should be returned in response
+      $project: {
+        fullName: 1,
+        username: 1,
+        avatar: 1,
+        coverImage: 1,
+        email: 1,
+        subscribersCount: 1,
+        channelsSubscribedToCount: 1,
+        isSubscribed: 1,
+      },
+    },
+  ]);
+
+  if (!channel.length) {
+    throw new ApiError(404, "Channel does not exists");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, channel[0], "User Channel fetched successfully")
+    );
+});
+
+const getUserWatchHistory = asyncHandler(async (req, res) => {
+  const user = await User.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(req.user?._id),
+      },
+    },
+    {
+      $lookup: {
+        from: "videos",
+        localField: "watchHistory",
+        foreignField: "_id",
+        as: "watchHistory",
+        // this sub pipeline helps us to extract owners of videos
+        pipeline: [
+          {
+            $lookup: {
+              from: "users",
+              localField: "owner",
+              foreignField: "_id",
+              as: "owner",
+              // this pipeline applies only on owner document so written inside
+              pipeline: [{ $project: { fullName: 1, username: 1, avatar: 1 } }],
+            },
+          },
+          // since originally owner was an array of 1 element, it is now converted into object which will helps frontend developer to extract fields
+          { $addFields: { owner: { $first: "$owner" } } },
+        ],
+      },
+    },
+  ]);
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        user[0].watchHistory,
+        "User's watch history fetched successfully"
+      )
+    );
+});
+
 export {
   registerUser,
   loginUser,
@@ -374,4 +492,6 @@ export {
   updateAccountDetails,
   updateUserAvatar,
   updateUserCoverImage,
+  getUserChannelProfile,
+  getUserWatchHistory,
 };

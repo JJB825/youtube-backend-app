@@ -166,3 +166,9 @@ self practice of todos for logging user:
 -----------------------------------------------------------------------------------------
 
 setup auth middleware for authentication
+
+understanding subscription schema:
+we want following information: subscribers count, subscribed count and whether user A has subscribed to channel (user B) or not. we could store them in array of users in user model, but one user can have million subscribers, and storing them in an array would be computationally and resourceful expensive. so we have made a new model
+
+to find subscriber count, count documents where channel == inputChannel whose subscriber count is to be found out
+to find subscribed to count, count documents where subscriber == user whose count of how many channels it has subscribed to has to be found out
